@@ -353,7 +353,8 @@ int main()
     
         for(int i=0; i<20; i++)
             cout<<f.maze[i]<<endl;
-        beginp2Genetics(f);
+    //    beginp2Genetics(f);
+        beginp3Genetics(f);
     }
     else
         cout<<"unable to open.\n";
