@@ -1,0 +1,9 @@
+1. B4.csv
+2. 77
+3. The greedy min boundary is the high-ratio first method.
+value: 146, cost: 77, items: 16, 1, 10, 20, 11, 12, 14, 17, 22, 23, 18, 2, 26, 27, 28, 29, 32, 34, 35, 36, 37, 3, 33, 39, 4, 5, 6, 7, 9
+4. Results from partial sack:
+value: 146, cost: 77, items: 16, 1, 10, 20, 11, 12, 14, 17, 22, 23, 18, 2, 26, 27, 28, 29, 32, 34, 35, 36, 37, 3, 33, 39, 4, 5, 6, 7, plus 50% of 21
+5. Results from optimized search: value: 146, cost: 77, items: 1, 10, 11, 12, 21, 14, 16, 17, 18, 22, 2, 20, 32, 23, 35, 26, 27, 28, 29, 3, 33, 34, 36, 37, 39, 4, 5, 7
+6. 
+7. optimized time: 1.685614sec.

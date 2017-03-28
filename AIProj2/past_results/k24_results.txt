@@ -1,0 +1,9 @@
+1. k24.csv
+2. 60
+3. The greedy min boundary is the high-ratio first method.
+value: 99, cost: 60, items: a, c, e, f, g, i, j, k, o, p, q, s, t, u, v, x
+4. Results from partial sack:
+value: 99, cost: 60, items: a, e, f, g, i, j, k, o, p, q, s, t, u, v, x, plus 80% of w
+5. Results from optimized search: value: 99, cost: 60, items: a, e, f, g, i, j, k, o, q, s, t, u, v, w, x
+6. brute force time: 0.261391sec.
+7. optimized time: 0.001997sec.

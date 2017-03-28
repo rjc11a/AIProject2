@@ -1,0 +1,13 @@
+1. First, compile the file "main.cpp" in this folder.
+
+2. Run the program. The program will prompt you to enter a file name, such as A1.csv
+
+3. The program will attempt to open the file. If successful, it will quickly scan the file 
+	to calculate the length of the sack, and inform the user of the size. 
+
+4. It will then prompt the user to enter y or n to run the brute force method. 
+	Brute force is not recommended over 32 items as it will take longer than 5 minutes to complete.
+
+5. The program will then begin running the tests. Once complete, a file will appear in this directory 
+	according to the name of the file entered.
+	For example, if the user enters A1.csv for the input file, the output file will be named A1_results.txt

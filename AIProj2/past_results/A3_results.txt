@@ -1,0 +1,9 @@
+1. A3.csv
+2. 1116
+3. The greedy min boundary is the low-cost first method.
+value: 1004, cost: 1004, items: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y
+Results from partial sack:
+value: 1004, cost: 1004, items: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y
+5. Results from optimized search: value: 1004, cost: 1004, items: a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y
+6. brute force time: 0.505309sec.
+7. optimized time: 0.000003sec.

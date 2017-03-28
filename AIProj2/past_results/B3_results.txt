@@ -1,0 +1,9 @@
+1. B3.csv
+2. 1637333
+3. The greedy min boundary is the high-value first method.
+value: 3112377, cost: 1637333, items: a, b, e, f, h, k, l, o, p, q, r, t, y
+4. Results from partial sack:
+value: 3179791, cost: 1637333, items: I, a, b, c, d, e, f, g, h, j, l, m, n, o, p, q, r, s, t, u, v, w, x, y, plus 67% of k
+5. Results from optimized search: value: 3124026, cost: 1637333, items: c, d, f, j, k, m, n, o, q, r, s, t, w, y
+6. brute force time: 0.527434sec.
+7. optimized time: 0.024591sec.
