@@ -43,8 +43,12 @@ struct forest{
     string maze[NUMSTRINGS];
 };
 struct genNode{
+    //genNode(){wallhit = 0; food = 0; dead=false;}
     string genome;
     int strength;
+    int wallhit;
+    int food;
+    bool dead;
 };
 
 bool operator>(genNode a, genNode b)
@@ -170,6 +174,9 @@ void p2fitness(genNode& specimen, const forest& f)
 {
     string dir; int leftspot=f.startstr, rightspot=f.startchar;
     int worthy = 0;
+    specimen.wallhit=0;
+    specimen.food=0;
+    specimen.dead=false;
     bool used[f.dimensions][f.dimensions];
     
     for(int i=0; i<f.dimensions; i++)
@@ -198,11 +205,13 @@ void p2fitness(genNode& specimen, const forest& f)
         if(f.maze[leftgo][rightgo] == 'x')//wall
         {
             //do nothing
+            specimen.wallhit++;
         }
         else if(f.maze[leftgo][rightgo] == 'd')//died
         {
             specimen.strength = worthy - 10;
    //         cout<<"current specimen died, has "<<specimen.strength<<"fitness\n";
+            specimen.dead = true;
             return;
         }
         else if(f.maze[leftgo][rightgo] == 'f')//food
@@ -211,6 +220,7 @@ void p2fitness(genNode& specimen, const forest& f)
             {
                 worthy += 20;
                 used[leftgo][rightgo]=true;
+                specimen.food++;
             }
             leftspot=leftgo; rightspot=rightgo;
         }
@@ -478,6 +488,9 @@ void p3fitness(genNode& specimen, const forest& f)
     p3fitcalls++;
     string dir; int leftspot=f.startstr, rightspot=f.startchar;
     int worthy = 0;
+    specimen.wallhit=0;
+    specimen.food=0;
+    specimen.dead=false;
     bool used[f.dimensions][f.dimensions];
     
     for(int i=0; i<f.dimensions; i++)
@@ -507,11 +520,13 @@ void p3fitness(genNode& specimen, const forest& f)
         {
             //lose 1 fitness, waste turn
             worthy -= 1;
+            specimen.wallhit++;
         }
         else if(f.maze[leftgo][rightgo] == 'd')//died
         {
             specimen.strength = worthy - 10;
             //         cout<<"current specimen died, has "<<specimen.strength<<"fitness\n";
+            specimen.dead = true;
             return;
         }
         else if(f.maze[leftgo][rightgo] == 'f')//food
@@ -520,8 +535,10 @@ void p3fitness(genNode& specimen, const forest& f)
             {
                 worthy += 20;
                 used[leftgo][rightgo]=true;
+                specimen.food++;
             }
             leftspot=leftgo; rightspot=rightgo;
+            
         }
         else                                //can move
         {

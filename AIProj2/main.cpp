@@ -385,7 +385,12 @@ int main()
         cout<<readable<<endl;
 
         
-        cout<<"strength = "<<survivor.strength<<endl;
+        
+        cout<<"***breakdown***\n";
+        cout<<"strength = "<<survivor.strength<<endl<<"walls hit (-1 per): "<<survivor.wallhit<<endl<<"food found (+20 per): "<<survivor.food<<endl;
+        if(survivor.dead)
+            cout<<"This specimen died.\n";
+        else cout<<"This specimen did not die.\n";
 
         
         cout<<endl<<"tot fitness calls: "<<p3fitcalls<<endl;
