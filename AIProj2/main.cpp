@@ -354,7 +354,18 @@ int main()
         for(int i=0; i<20; i++)
             cout<<f.maze[i]<<endl;
     //    beginp2Genetics(f);
-        beginp3Genetics(f);
+        genNode i1 = beginp3Genetics(f);
+        genNode i2 = beginp3Genetics(f);
+        genNode i3 = beginp3Genetics(f);
+        genNode i4 = beginp3Genetics(f);
+        
+        genNode survivor = maxFour(i1, i2, i3, i4);
+        cout<<"A survivor has appeared.\ngenome: "<<survivor.genome<<endl<<"strength = "<<survivor.strength<<endl;
+
+        
+        cout<<endl<<"tot fitness calls: "<<p3fitcalls<<endl;
+        cout<<"the brute force exhaustive calls for this input would be: 4^"<<f.steps<<
+        " = "<<pow(4,f.steps)<<endl;
     }
     else
         cout<<"unable to open.\n";
