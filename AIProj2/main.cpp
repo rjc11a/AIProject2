@@ -353,19 +353,45 @@ int main()
     
         for(int i=0; i<20; i++)
             cout<<f.maze[i]<<endl;
-    //    beginp2Genetics(f);
+  //      beginp2Genetics(f);
         genNode i1 = beginp3Genetics(f);
         genNode i2 = beginp3Genetics(f);
         genNode i3 = beginp3Genetics(f);
         genNode i4 = beginp3Genetics(f);
         
         genNode survivor = maxFour(i1, i2, i3, i4);
-        cout<<"A survivor has appeared.\ngenome: "<<survivor.genome<<endl<<"strength = "<<survivor.strength<<endl;
+   
+        cout<<"A survivor has appeared.\ngenome: \n"<<survivor.genome<<endl;
+        
+        cout<<"translation: ";
+        string readable="";
+        for(int i=0; i<f.steps * 2; i+=2)
+        {
+            if(survivor.genome[i] == '1')
+            {
+                if(survivor.genome[i+1] == '1')//11
+                    readable+='N';
+                else                    //10
+                    readable+='W';
+            }
+            else
+            {
+                if(survivor.genome[i+1] == '1')//01
+                    readable+='E';
+                else                       //00
+                    readable+='S';
+            }
+        }
+        cout<<readable<<endl;
+
+        
+        cout<<"strength = "<<survivor.strength<<endl;
 
         
         cout<<endl<<"tot fitness calls: "<<p3fitcalls<<endl;
         cout<<"the brute force exhaustive calls for this input would be: 4^"<<f.steps<<
         " = "<<pow(4,f.steps)<<endl;
+   
     }
     else
         cout<<"unable to open.\n";

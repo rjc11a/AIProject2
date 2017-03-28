@@ -363,7 +363,7 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
     int third = 3, second = 2, first = 1;
     while(redo)
     {
-        cout<<"redoing.\n";
+ //       cout<<"redoing.\n";
         while(! (h.data[1].strength == h.data[100].strength) )
         {
             baby = p2reproduce(frsBest, secBest, f);
@@ -385,9 +385,25 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
         {
             if(h.data[i].strength != h.data[i+1].strength)//not same, repeat
             {
-                cout<<"not all eq yet\n";
+      //          cout<<"not all eq yet\n";
                 alleq=false;
                 i=100;
+            }
+            else
+            {
+                baby = p2reproduce(frsBest, secBest, f);
+                if(baby > secBest)
+                {
+                    if(baby > frsBest)
+                    {
+                        secBest = frsBest;
+                        frsBest = baby;
+                    }
+                    else
+                        secBest = baby;
+                }
+                put(h, baby);
+                sacrifice = get(h);
             }
         }
         if(alleq) //was all same, checkem
