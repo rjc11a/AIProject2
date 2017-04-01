@@ -266,12 +266,23 @@ string printsack3(sack s, int n, double d, int c)
 }
 
 
-
-
-
-
-
-
+//struct geneticSack{
+//    int items;
+//    int capacity;
+//    string * names;
+//    int* costs;
+//    int* values;
+//    double* ratios;
+//};
+//void init_sack(geneticSack &s, int n, int c){
+//    
+//    s.items = n;
+//    s.capacity = c;
+//    s.names = new string[n];
+//    s.costs = new int[n];
+//    s.values = new int[n];
+//    s.ratios = new double[n];
+//}
 int main()
 {
     forest f;
@@ -279,24 +290,27 @@ int main()
  //   beginGenetics(s1);
     
      //string out1="1. ",out2="",out3="",out4="",out5="",out6="6. ",out7="7. ";
-     string filename, bigline; //int items,capacity; geneticSack sack1;
+     string filename1, filename2, bigline; int items,capacity; geneticSack sack1;
 
      ifstream fin;
      ofstream fout;
-     cout<<"Enter exact filename for testing: ";
-     cin>>filename; //    out1 += filename;
-     fin.open(filename.c_str());
-    /*
+     cout<<"Enter exact filename for Phase1 testing: ";
+     cin>>filename1; //    out1 += filename;
+    cout<<"Enter exact filename for Phase 2/3 testing:";
+    cin>> filename2;
+     fin.open(filename1.c_str());
      if(fin.is_open())
      {
          cout<<"file opened successfully.\n";
   //       init_sack(sack1, 200);
+         
          int cur = 0;
          string store="";
          getline(fin,store);
          //        out2 = "2. ";
          //        out2+=store;
          capacity = stoi(store);
+         init_sack(sack1, 200, capacity);
          cout<<store<<endl;
          while(!fin.eof())
          {
@@ -331,13 +345,26 @@ int main()
          cur++;
          }
          items = cur;
+         sack1.items = items;
  //        printsack(sack1, items);
          int totsumsum = 0;
          for(int i=0; i<items; i++)
          totsumsum+=sack1.costs[i];
          cout<<"TOTAL COST ALL ITEMS = "<<totsumsum<<endl;
+         
+         cout<<"Beginning Phase 1.\n";
+         p1Node p1strand;
+         p1strand = beginp1Genetics(sack1);
+         cout<<"Phase 1 complete.\n";
+         cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl;
      }
-     */
+    else
+        cout<<"Failed to open "<<filename1<<".\n";
+    
+    
+    fin.close();
+    cout<<"Proceeding with Phase 2.\n";
+    fin.open(filename2.c_str());
     if(fin.is_open())
     {
         fin>>f.dimensions;
@@ -353,13 +380,58 @@ int main()
     
         for(int i=0; i<20; i++)
             cout<<f.maze[i]<<endl;
-  //      beginp2Genetics(f);
+        genNode p2strand = beginp2Genetics(f);
+        cout<<"A survivor has appeared for Phase 2.\ngenome: \n"<<p2strand.genome<<endl;
+        
+        cout<<"translation: ";
+        string readable2="";
+        for(int i=0; i<f.steps * 2; i+=2)
+        {
+            if(p2strand.genome[i] == '1')
+            {
+                if(p2strand.genome[i+1] == '1')//11
+                    readable2+='N';
+                else                    //10
+                    readable2+='W';
+            }
+            else
+            {
+                if(p2strand.genome[i+1] == '1')//01
+                    readable2+='E';
+                else                       //00
+                    readable2+='S';
+            }
+        }
+        cout<<readable2<<endl;
+        
+        cout<<"***breakdown***\n";
+        cout<<"strength = "<<p2strand.strength<<endl<<"walls hit (-1 per): "<<p2strand.wallhit<<endl<<"food found (+20 per): "<<p2strand.food<<endl;
+        if(p2strand.dead)
+            cout<<"This specimen died.\n";
+        else cout<<"This specimen did not die.\n";
+        
+        
+        //cout<<endl<<"tot fitness calls: "<<p3fitcalls<<endl;
+        //cout<<"the brute force exhaustive calls for this input would be: 4^"<<f.steps<<
+        //" = "<<pow(4,f.steps)<<endl;
+        
+        cout<<endl<<endl;
+
+        
+        cout<<"beginning Phase 3:";
+        
         genNode i1 = beginp3Genetics(f);
         genNode i2 = beginp3Genetics(f);
         genNode i3 = beginp3Genetics(f);
         genNode i4 = beginp3Genetics(f);
         
         genNode survivor = maxFour(i1, i2, i3, i4);
+        for(int i=0; i<10; i++)
+        {
+            genNode surv2 = beginp3Genetics(f);
+            if(surv2>survivor)
+                survivor = surv2;
+        }
    
         cout<<"A survivor has appeared.\ngenome: \n"<<survivor.genome<<endl;
         

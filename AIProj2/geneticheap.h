@@ -42,6 +42,12 @@ struct forest{
     int startchar;
     string maze[NUMSTRINGS];
 };
+
+struct p1Node{
+    
+    string genome;
+    int strength;
+};
 struct genNode{
     //genNode(){wallhit = 0; food = 0; dead=false;}
     string genome;
@@ -50,6 +56,34 @@ struct genNode{
     int food;
     bool dead;
 };
+
+bool operator>(p1Node a, p1Node b)
+{
+    return a.strength > b.strength;
+}
+bool operator<(p1Node a, p1Node b)
+{
+    return a.strength < b.strength;
+}
+bool operator>=(p1Node a, p1Node b)
+{
+    return a.strength >= b.strength;
+}
+bool operator<=(p1Node a, p1Node b)
+{
+    return a.strength <= b.strength;
+}
+
+bool operator==(p1Node a, p1Node b)
+{
+    return a.genome == b.genome;
+}
+bool operator!=(p1Node a, p1Node b)
+{
+    return a.genome != b.genome;
+}
+//bool operator=
+
 
 bool operator>(genNode a, genNode b)
 {
@@ -151,7 +185,7 @@ T get(Heap<T> &h)
 }
 
 //fitness function for phase 1
-void p1fitness(genNode& specimen, const geneticSack& s)
+void p1fitness(p1Node& specimen, const geneticSack& s)
 {
     int tolwt=0;
     specimen.strength=0;
@@ -249,9 +283,26 @@ void p2mutate(genNode& a)
     }
  //   return changed;
 }
-genNode p1reproduce(const genNode &a,const genNode &b, const geneticSack &s)
+void p1mutate(p1Node& a)
 {
-    genNode baby1, baby2;
+    int i=0;
+    bool changed=false;
+    while(a.genome[i] != 0)//0 term string
+    {
+        if((rand() % 1000) < 5)//0.5% flip chance
+        {
+            if(a.genome[i] == '1')
+                a.genome[i] = '0';
+            a.genome[i]='1';
+            changed = true;
+        }
+        i++;
+    }
+    //   return changed;
+}
+p1Node p1reproduce(const p1Node &a,const p1Node &b, const geneticSack &s)
+{
+    p1Node baby1, baby2;
     baby1.genome="";
     baby2.genome="";
     int enda = rand() % (s.items-1);
@@ -282,7 +333,7 @@ void p3mutate(genNode& a)
   //  bool changed=false;
     while(a.genome[i] != 0)//0 term string
     {
-        if((rand() % 100) < 5)//5% flip chance
+        if((rand() % 1000) < (50+i))//5% flip chance, further to the right = increased chance
         {
             if(a.genome[i] == '1')
                 a.genome[i] = '0';
@@ -322,6 +373,35 @@ genNode p2reproduce(const genNode &a,const genNode &b, const forest& f)
     return baby2;
 }
 
+
+
+void p1cataclysm(Heap<p1Node>&h, const geneticSack& s)
+{
+    p1Node * commies = new p1Node[101];
+    for(int o=1; o<101; o++)
+    {
+        commies[o] = h.data[o];
+        int i=0;
+        while(commies[o].genome[i] != 0)//0 term string
+        {
+            if((rand() % 100) < 20)//20% flip chance
+            {
+                if(commies[o].genome[i] == '1')
+                    commies[o].genome[i] = '0';
+                commies[o].genome[i]='1';
+            }
+            i++;
+        }
+    }
+    h.size=1;
+    for(int i=1; i<100; i++)
+    {
+        p1fitness(commies[i], s);
+        put(h,commies[i]);//put the stuff back in heap
+    }
+    delete [] commies;
+}
+
 void p2cataclysm(Heap<genNode>&h, const forest& f)
 {
     genNode * commies = new genNode[101];
@@ -350,13 +430,151 @@ void p2cataclysm(Heap<genNode>&h, const forest& f)
 }
 
 //survival function for phase 1
+
+void p1survive(Heap<p1Node> &h, const geneticSack& s)//initted heap
+{
+    //   int weight=0, val=0;
+    cout<<"beginning survival:\n";
+    int converges = 0;
+    p1Node secBest=h.data[1], frsBest=h.data[1], baby, sacrifice; //init the needed nodes
+    for(int i=2; i<101; i++)//find the second and first strongest
+    {
+        if(h.data[i] > secBest)
+        {
+            if(h.data[i] > frsBest)
+            {
+                secBest = frsBest;
+                frsBest = h.data[i];
+            }
+            else
+                secBest = h.data[i];
+        }
+    }
+    bool redo = true;
+    int third = 3, second = 2, first = 1;
+    while(redo)
+    {
+               cout<<"redoing.\n";
+        while(! (h.data[1].strength == frsBest.strength) )
+        {
+            baby = p1reproduce(frsBest, secBest, s);
+            if(baby > secBest)
+            {
+                if(baby > frsBest)
+                {
+                    secBest = frsBest;
+                    frsBest = baby;
+                }
+                else
+                    secBest = baby;
+            }
+            put(h, baby);
+            sacrifice = get(h);
+        }
+        bool alleq = true;
+        for(int i=1; i<100; i++)//check if all same genome
+        {
+            if(h.data[i].strength != h.data[i+1].strength)//not same, repeat
+            {
+                //          cout<<"not all eq yet\n";
+                alleq=false;
+                i=100;
+            }
+            else
+            {
+                baby = p1reproduce(frsBest, secBest, s);
+                if(baby > secBest)
+                {
+                    if(baby > frsBest)
+                    {
+                        secBest = frsBest;
+                        frsBest = baby;
+                    }
+                    else
+                        secBest = baby;
+                }
+                put(h, baby);
+                sacrifice = get(h);
+            }
+        }
+        if(alleq) //was all same, checkem
+        {
+            converges++;
+            cout<<"converged "<<converges<<" times, strength: "<<h.data[1].strength;
+            third=second;
+            second=first;
+            first=h.data[1].strength;
+            
+            if(third == second && second == first) //we done 4 real tho
+            {
+                redo = false;
+            }
+            else//not done yet better cataclysmize
+            {
+                p1cataclysm(h, s);
+                secBest=h.data[1];
+                frsBest=h.data[1];
+                for(int i=2; i<101; i++)//recheck 1st2ndbest
+                {
+                    if(h.data[i] > secBest)
+                    {
+                        if(h.data[i] > frsBest)
+                        {
+                            secBest = frsBest;
+                            frsBest = h.data[i];
+                        }
+                        else
+                            secBest = h.data[i];
+                    }
+                }
+            }
+        }
+        
+    }
+    /*
+    cout<< "we have come to a standstill.\nThe best genomes are: ";
+    int k = 1;
+    while(!isEmpty(h))
+    {
+        cout<<"\ngenome "<<k<<": ";
+        genNode cur = get(h);
+        cout<<"strength = "<<cur.strength<<endl;
+        cout<< cur.genome <<endl;
+        cout<<"translation: ";
+        string readable="";
+        for(int i=0; i<f.steps * 2; i+=2)
+        {
+            if(cur.genome[i] == '1')
+            {
+                if(cur.genome[i+1] == '1')//11
+                    readable+='N';
+                else                    //10
+                    readable+='W';
+            }
+            else
+            {
+                if(cur.genome[i+1] == '1')//01
+                    readable+='E';
+                else                       //00
+                    readable+='S';
+            }
+        }
+        cout<<readable<<endl;
+        k++;
+    }
+     */
+}
+
+
+/* 88888888888888888888888888888888888888888888888888888 */
+
 void p2survive(Heap<genNode> &h, const forest& f)//initted heap
 {
     //   int weight=0, val=0;
     cout<<"beginning survival:\n";
     int converges = 0;
-    genNode secBest=h.data[1], frsBest=h.data[2], baby, sacrifice; //init the needed nodes
-    for(int i=3; i<101; i++)//find the second and first strongest
+    genNode secBest=h.data[1], frsBest=h.data[1], baby, sacrifice; //init the needed nodes
+    for(int i=2; i<101; i++)//find the second and first strongest
     {
         if(h.data[i] > secBest)
         {
@@ -374,7 +592,7 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
     while(redo)
     {
  //       cout<<"redoing.\n";
-        while(! (h.data[1].strength == h.data[100].strength) )
+        while(! (h.data[1].strength == frsBest.strength) )
         {
             baby = p2reproduce(frsBest, secBest, f);
             if(baby > secBest)
@@ -450,6 +668,7 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
         }
         
     }
+    /*
     cout<< "we have come to a standstill.\nThe best genomes are: ";
     int k = 1;
     while(!isEmpty(h))
@@ -479,7 +698,7 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
         }
         cout<<readable<<endl;
         k++;
-    }
+    }*/
 }
 static int p3fitcalls = 0;
 void p3fitness(genNode& specimen, const forest& f)
@@ -604,8 +823,8 @@ genNode p3reproduce(const genNode &a,const genNode &b, const forest& f)
 
 void p3cataclysm(Heap<genNode>&h, const forest& f)
 {
-    genNode * commies = new genNode[10001];//num of lifeforms
-    for(int o=1; o<10001; o++)//every lifeform
+    genNode * commies = new genNode[1001];//num of lifeforms
+    for(int o=1; o<1001; o++)//every lifeform
     {
         commies[o] = h.data[o];
         int i=0;
@@ -621,7 +840,7 @@ void p3cataclysm(Heap<genNode>&h, const forest& f)
         }
     }
     h.size=1;
-    for(int i=1; i<10000; i++)//put em back
+    for(int i=1; i<1000; i++)//put em back
     {
         p3fitness(commies[i], f);
         put(h,commies[i]);//put the stuff back in heap
@@ -636,7 +855,7 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
     cout<<"beginning survival:\n";
     int converges = 0;
     genNode secBest=h.data[1], frsBest=h.data[1], worst = h.data[1], baby, sacrifice; //init the needed nodes
-    for(int i=2; i<10001; i++)//find the second and first strongest
+    for(int i=2; i<1001; i++)//find the second and first strongest
     {
         if(h.data[i] > secBest)
         {
@@ -673,13 +892,13 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
             worst = get(h);
         }
         bool alleq = true;
-        for(int i=1; i<10000; i++)//check if all same genome str
+        for(int i=1; i<1000; i++)//check if all same genome str
         {
             if(h.data[i].strength != h.data[i+1].strength)//not same, repeat
             {
                 cout<<"not all eq yet\n";
                 alleq=false;
-                i=10000;
+                i=1000;
             }
         }
         if(alleq) //was all same, checkem
@@ -702,7 +921,7 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
                     secBest=h.data[1];
                     frsBest=h.data[1];
                     worst = h.data[1];
-                    for(int i=2; i<10001; i++)//recheck 1st2ndbest and worst
+                    for(int i=2; i<1001; i++)//recheck 1st2ndbest and worst
                     {
                         if(h.data[i] > secBest)
                         {
@@ -727,7 +946,7 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
                 secBest=h.data[1];
                 frsBest=h.data[1];
                 worst = h.data[1];
-                for(int i=2; i<10001; i++)//recheck 1st2ndbest and worst
+                for(int i=2; i<1001; i++)//recheck 1st2ndbest and worst
                 {
                     if(h.data[i] > secBest)
                     {
@@ -746,12 +965,13 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
         }
         
     }
-    cout<< "\nWe have come to a standstill.\nThe best genome found is: ";
+    //cout<< "\nWe have come to a standstill.\nThe best genome found is: ";
+    /*
     int k = 1;
     //while(!isEmpty(h))
     {
         cout<<"\ngenome "<<k<<": ";
-        genNode cur = get(h);
+        //genNode cur = get(h);
         cout<<"strength = "<<cur.strength<<endl;
         cout<< cur.genome <<endl;
         cout<<"translation: ";
@@ -776,41 +996,34 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
         cout<<readable<<endl;
         k++;
     }
+     */
 }
-void beginp1Genetics(const geneticSack &s )//this is the first func, initializes heap
+p1Node beginp1Genetics(const geneticSack &s )//this is the first func, initializes heap
 {
     srand(time(NULL));
-    Heap<genNode> h;
+    Heap<p1Node> h;
+    initialize(h);
     string str1="";
     for(int i=0; i<100; i++)//this is the number of genomes
     {
+        cout<<"beginning p1, iteration "<<i<<endl;
         str1 = "";//init gen
         for(int iterations=0; iterations<s.items; iterations++)//this is the number of items
         {
             str1 += ('0' + rand() % 2);
         }
-        genNode a;
+        p1Node a;
         a.genome = str1;
         
         
         p1fitness(a, s);
-        //fake fitness simulation on (a)
-        /*
-         int sum =0;
-         for(int k = 0;str1[k] != 0; k++)
-         {
-         if(str1[k] == '1')
-         sum++;
-         }
-         a.strength = sum;
-         */
-        //end fake fitness simulation
         
         put(h, a);
         
         
     }
     //heap is complete
+    /*
     cout<<"randomized initial heap: \n";
     int k = 1;
     while(!isEmpty(h))
@@ -819,9 +1032,12 @@ void beginp1Genetics(const geneticSack &s )//this is the first func, initializes
         cout<<(get(h).genome)<<endl;
         k++;
     }
+     */
+    p1survive(h,s);
+    return h.data[1];
 }
 
-void beginp2Genetics(const forest &f )//this is the first func, initializes heap
+genNode beginp2Genetics(const forest &f )//this is the first func, initializes heap
 {
     srand(time(NULL));
     Heap<genNode> h;
@@ -846,6 +1062,7 @@ void beginp2Genetics(const forest &f )//this is the first func, initializes heap
     }
     //heap is complete
     p2survive(h, f);
+    return h.data[1];
 }
 
 genNode beginp3Genetics(const forest& f)
@@ -854,7 +1071,7 @@ genNode beginp3Genetics(const forest& f)
     Heap<genNode> h;
     initialize(h);
     string str1="";
-    for(int i=0; i<10000; i++)//this is the number of genomes
+    for(int i=0; i<1000; i++)//this is the number of genomes
     {
         str1 = "";//init gen
         for(int iterations=0; iterations< f.steps *2; iterations++)//this is the number of items
