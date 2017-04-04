@@ -97,17 +97,17 @@ genNode p2reproduce(const genNode &a,const genNode &b, const forest& f)
 {
     genNode baby1, baby2;
     baby1.genome="";
-    baby2.genome="";
+//    baby2.genome="";
     int enda = ((rand() * 2) +1) % ((f.steps * 2)-2); //force rand() to be odd, odd%even = odd
     for(int i=0; i<= enda; i++)
     {
         baby1.genome+=a.genome[i];
-        baby2.genome+=b.genome[i];
+//        baby2.genome+=b.genome[i];
     }
     for(int i=enda+1; i<(f.steps * 2); i++)
     {
         baby1.genome += b.genome[i];
-        baby2.genome += a.genome[i];
+//        baby2.genome += a.genome[i];
     }
     
     // mutations go here
@@ -142,7 +142,7 @@ void p2cataclysm(Heap<genNode>&h, const forest& f)
         }
     }
     h.size=1;
-    for(int i=1; i<100; i++)
+    for(int i=1; i<101; i++)
     {
         p2fitness(commies[i], f);
         put(h,commies[i]);//put the stuff back in heap
@@ -232,6 +232,10 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
             else//not done yet better cataclysmize
             {
                 p2cataclysm(h, f);
+                
+                sacrifice = get(h);
+                put(h,frsBest);//keep the old best one
+                
                 secBest=h.data[1];
                 frsBest=h.data[2];
                 for(int i=3; i<101; i++)//recheck 1st2ndbest

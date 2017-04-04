@@ -99,7 +99,7 @@ void p1cataclysm(Heap<p1Node>&h, const geneticSack& s)
         }
     }
     h.size=1;
-    for(int i=1; i<100; i++)
+    for(int i=1; i<101; i++)
     {
         p1fitness(commies[i], s);
         put(h,commies[i]);//put the stuff back in heap

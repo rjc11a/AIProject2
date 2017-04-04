@@ -489,10 +489,10 @@ int main()
     if(p1done)
     {
         cout<<"Phase1 result genome:\n";
-        cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl;
+        cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl<<endl;
     }
     else
-        cout<<"Phase 1 failed to open.\n";
+        cout<<"Phase 1 failed to open.\n\n";
     
     
     if(p3done)
@@ -505,9 +505,9 @@ int main()
         if(p2strand.dead)
             cout<<"This specimen died.\n";
         else
-            cout<<"This specimen did not die.\n";
+            cout<<"This specimen did not die.\n\n";
         
-        cout<<"Phase 3 result genome:\n";
+        cout<<"*******************\nPhase 3 result genome:\n";
         cout<<readable<<endl;
        // cout<<"***breakdown***\n";
         cout<<"strength = "<<survivor.strength<<endl<<"walls hit (-1 per): "<<survivor.wallhit<<endl<<"food found (+20 per): "<<survivor.food<<endl;

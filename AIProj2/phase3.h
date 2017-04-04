@@ -18,7 +18,7 @@ void p3mutate(genNode& a)
     //  bool changed=false;
     while(a.genome[i] != 0)//0 term string
     {
-        if((rand() % 1000) < (50+i))//5% flip chance, further to the right = increased chance
+        if((rand() % 1000) < (100+ i))//5% flip chance, further to the right = increased chance
         {
             if(a.genome[i] == '1')
                 a.genome[i] = '0';
@@ -138,7 +138,7 @@ void p3cataclysm(Heap<genNode>&h, const forest& f)
         int i=0;
         while(commies[o].genome[i] != 0)//0 term string
         {
-            if((rand() % 100) < 25)//20% flip chance
+            if((rand() % 100) < 30)//35% flip chance (up from 20%)
             {
                 if(commies[o].genome[i] == '1')
                     commies[o].genome[i] = '0';
@@ -149,7 +149,7 @@ void p3cataclysm(Heap<genNode>&h, const forest& f)
         }
     }
     h.size=1;
-    for(int i=1; i<1000; i++)//put em back
+    for(int i=1; i<1001; i++)//put em back
     {
         p3fitness(commies[i], f);
         put(h,commies[i]);//put the stuff back in heap
@@ -183,7 +183,7 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
     int third = 3, second = 2, first = 1;
     while(redo)
     {
-        cout<<"redoing.\n";
+  //      cout<<"redoing.\n";
         while(! (frsBest.strength == worst.strength) )//not eq str
         {
             baby = p3reproduce(frsBest, secBest, f);
@@ -205,7 +205,7 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
         {
             if(h.data[i].strength != h.data[i+1].strength)//not same, repeat
             {
-                cout<<"not all eq yet\n";
+    //            cout<<"not all eq yet\n";
                 alleq=false;
                 i=1000;
             }
@@ -213,7 +213,7 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
         if(alleq) //was all same, checkem
         {
             // converges++;
-            cout<<"converged "<<converges<<" times, strength: "<<h.data[1].strength<<". ";
+ //           cout<<"converged "<<converges<<" times, strength: "<<h.data[1].strength<<". ";
             third=second;
             second=first;
             first=h.data[1].strength;
@@ -225,8 +225,12 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
                     redo = false;
                 else
                 {
-                    cout<<"***CATACLYSM***\n";
+  //                  cout<<"***CATACLYSM***\n";
                     p3cataclysm(h, f);
+                    
+                    worst = get(h);//keep the old best one
+                    put(h,frsBest);
+                    
                     secBest=h.data[1];
                     frsBest=h.data[1];
                     worst = h.data[1];
@@ -249,9 +253,13 @@ void p3survive(Heap<genNode> &h, const forest& f)//initted heap
             }
             else//not done yet better cataclysmize
             {
-                cout<<"***CATACLYSM***\n";
+ //               cout<<"***CATACLYSM***\n";
                 converges = 0;
                 p3cataclysm(h, f);
+                
+                worst = get(h);//keep the old best one
+                put(h,frsBest);
+                
                 secBest=h.data[1];
                 frsBest=h.data[1];
                 worst = h.data[1];
