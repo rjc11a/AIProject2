@@ -13,7 +13,9 @@ using namespace std;
 #include <fstream>
 #include "sorting.h"
 #include <iomanip>
-#include "geneticheap.h"
+#include "phase1.h"
+#include "phase2.h"
+#include "phase3.h"
 
 struct sack{
     string * names;
@@ -290,73 +292,80 @@ int main()
  //   beginGenetics(s1);
     
      //string out1="1. ",out2="",out3="",out4="",out5="",out6="6. ",out7="7. ";
-     string filename1, filename2, bigline; int items,capacity; geneticSack sack1;
-
-     ifstream fin;
-     ofstream fout;
-     cout<<"Enter exact filename for Phase1 testing: ";
-     cin>>filename1; //    out1 += filename;
+     string filename1, filename2, bigline, readable2="", readable=""; int items,capacity; geneticSack sack1;
+    p1Node p1strand; genNode survivor,p2strand;
+    bool p1done=false, p3done=false;
+    ifstream fin;
+    ofstream fout;
+    cout<<"Enter exact filename for Phase1 testing: ";
+    cin>>filename1; //    out1 += filename;
     cout<<"Enter exact filename for Phase 2/3 testing:";
     cin>> filename2;
-     fin.open(filename1.c_str());
-     if(fin.is_open())
-     {
-         cout<<"file opened successfully.\n";
+    fin.open(filename1.c_str());
+    if(fin.is_open())
+    {
+        p1done = true;
+        cout<<"file opened successfully.\n";
   //       init_sack(sack1, 200);
          
-         int cur = 0;
-         string store="";
-         getline(fin,store);
-         //        out2 = "2. ";
-         //        out2+=store;
-         capacity = stoi(store);
-         init_sack(sack1, 200, capacity);
-         cout<<store<<endl;
-         while(!fin.eof())
-         {
+        int cur = 0;
+        string store="";
+        getline(fin,store);
+        //        out2 = "2. ";
+        //        out2+=store;
+        capacity = stoi(store);
+        init_sack(sack1, 200, capacity);
+        cout<<store<<endl;
+        while(!fin.eof())
+        {
          //   cout<<"took a line again\n";
-         getline(fin,bigline);
-         if(bigline == "")
-         break;
-         store="";
-         //item name
-         int ii = 0;
-         for(;bigline[ii]!=','; ii++)//until char is comma
-         {
-         store += bigline[ii]; //add char to sto
-         }
-         sack1.names[cur] = store;
-         ii++;
-         store = "";
-         //1st int
-         for(;bigline[ii]!=','; ii++)//until char is comma
-         {
-         store += bigline[ii]; //add char to sto
-         }
-         sack1.costs[cur] = stoi(store);
-         ii++;
-         store = "";
-         //2nd int
-         for(;bigline[ii]!=0; ii++)//until 0 termin string
-         {
-         store += bigline[ii]; //add char to sto
-         }
-         sack1.values[cur] = stoi(store);
-         cur++;
-         }
-         items = cur;
-         sack1.items = items;
- //        printsack(sack1, items);
-         int totsumsum = 0;
-         for(int i=0; i<items; i++)
-         totsumsum+=sack1.costs[i];
-         cout<<"TOTAL COST ALL ITEMS = "<<totsumsum<<endl;
-         
-         cout<<"Beginning Phase 1.\n";
-         p1Node p1strand;
-         p1strand = beginp1Genetics(sack1);
-         cout<<"Phase 1 complete.\n";
-         cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl;
+            getline(fin,bigline);
+            if(bigline == "")
+                break;
+            store="";
+            //item name
+            int ii = 0;
+            for(;bigline[ii]!=','; ii++)//until char is comma
+            {
+                store += bigline[ii]; //add char to sto
+            }
+            sack1.names[cur] = store;
+            ii++;
+            store = "";
+            //1st int
+            for(;bigline[ii]!=','; ii++)//until char is comma
+            {
+                store += bigline[ii]; //add char to sto
+            }
+            sack1.costs[cur] = stoi(store);
+            ii++;
+            store = "";
+            //2nd int
+            for(;bigline[ii]!=0; ii++)//until 0 termin string
+            {
+                store += bigline[ii]; //add char to sto
+            }
+            sack1.values[cur] = stoi(store);
+            cur++;
+        }
+        items = cur;
+        sack1.items = items;
+        //        printsack(sack1, items);
+        int totsumsum = 0;
+        int totval = 0;
+        for(int i=0; i<items; i++)
+        {
+            totsumsum+=sack1.costs[i];
+            totval += sack1.values[i];
+        }
+        cout<<"TOTAL COST ALL ITEMS = "<<totsumsum<<endl;
+        cout<<"TOTAL VALUE ALL ITEMS = "<<totval<<endl;
+
+        cout<<"Beginning Phase 1.\n";
+        
+        p1strand = beginp1Genetics(sack1);
+        cout<<"Phase 1 complete.\n";
+        cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl;
      }
     else
         cout<<"Failed to open "<<filename1<<".\n";
@@ -367,6 +376,7 @@ int main()
     fin.open(filename2.c_str());
     if(fin.is_open())
     {
+        p3done = true;
         fin>>f.dimensions;
         fin>>f.startstr;
         fin>>f.startchar;
@@ -380,11 +390,11 @@ int main()
     
         for(int i=0; i<20; i++)
             cout<<f.maze[i]<<endl;
-        genNode p2strand = beginp2Genetics(f);
+        p2strand = beginp2Genetics(f);
         cout<<"A survivor has appeared for Phase 2.\ngenome: \n"<<p2strand.genome<<endl;
         
         cout<<"translation: ";
-        string readable2="";
+        
         for(int i=0; i<f.steps * 2; i+=2)
         {
             if(p2strand.genome[i] == '1')
@@ -425,7 +435,7 @@ int main()
         genNode i3 = beginp3Genetics(f);
         genNode i4 = beginp3Genetics(f);
         
-        genNode survivor = maxFour(i1, i2, i3, i4);
+        survivor = maxFour(i1, i2, i3, i4);
         for(int i=0; i<10; i++)
         {
             genNode surv2 = beginp3Genetics(f);
@@ -436,7 +446,7 @@ int main()
         cout<<"A survivor has appeared.\ngenome: \n"<<survivor.genome<<endl;
         
         cout<<"translation: ";
-        string readable="";
+        
         for(int i=0; i<f.steps * 2; i+=2)
         {
             if(survivor.genome[i] == '1')
@@ -472,6 +482,46 @@ int main()
     }
     else
         cout<<"unable to open.\n";
+    
+    
+    /***** This is the output section *****/
+    cout<<"finished all computation.\n\n\n";
+    if(p1done)
+    {
+        cout<<"Phase1 result genome:\n";
+        cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl;
+    }
+    else
+        cout<<"Phase 1 failed to open.\n";
+    
+    
+    if(p3done)
+    {
+        cout<<"Phase 2 result genome:\n";
+        cout<<readable2<<endl;
+        
+      //  cout<<"***breakdown***\n";
+        cout<<"strength = "<<p2strand.strength<<endl<<"walls hit: "<<p2strand.wallhit <<endl <<"food found (+20 per): "<<p2strand.food<<endl;
+        if(p2strand.dead)
+            cout<<"This specimen died.\n";
+        else
+            cout<<"This specimen did not die.\n";
+        
+        cout<<"Phase 3 result genome:\n";
+        cout<<readable<<endl;
+       // cout<<"***breakdown***\n";
+        cout<<"strength = "<<survivor.strength<<endl<<"walls hit (-1 per): "<<survivor.wallhit<<endl<<"food found (+20 per): "<<survivor.food<<endl;
+        if(survivor.dead)
+            cout<<"This specimen died.\n";
+        else
+            cout<<"This specimen did not die.\n";
+        
+        
+        cout<<endl<<"tot fitness calls for p3: "<<p3fitcalls<<endl;
+        cout<<"the brute force exhaustive calls for this input would be: 4^"<<f.steps<<
+        " = "<<pow(4,f.steps)<<endl;
+    }
+    else cout <<"Phase 2/3 file failed to open.\n";
 }
 
  
