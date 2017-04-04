@@ -11,9 +11,10 @@
 #include <iostream>
 #include "geneticheap.h"
 
-
+static int p2fitcalls = 0;
 void p2fitness(genNode& specimen, const forest& f)
 {
+    p2fitcalls++;
     string dir; int leftspot=f.startstr, rightspot=f.startchar;
     int worthy = 0;
     specimen.wallhit=0;
@@ -220,7 +221,7 @@ void p2survive(Heap<genNode> &h, const forest& f)//initted heap
         if(alleq) //was all same, checkem
         {
             converges++;
-            cout<<"converged "<<converges<<" times, strength: "<<h.data[1].strength;
+   //         cout<<"converged "<<converges<<" times, strength: "<<h.data[1].strength;
             third=second;
             second=first;
             first=h.data[1].strength;

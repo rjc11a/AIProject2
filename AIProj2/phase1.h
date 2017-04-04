@@ -12,8 +12,10 @@
 #include "geneticheap.h"
 
 //fitness function for phase 1
+static int p1fitcalls = 0;
 void p1fitness(p1Node& specimen, const geneticSack& s)
 {
+    p1fitcalls++;
     int tolwt=0;
     specimen.strength=0;
     for(int i=0; i<s.items; i++)//for every item

@@ -18,7 +18,7 @@ void p3mutate(genNode& a)
     //  bool changed=false;
     while(a.genome[i] != 0)//0 term string
     {
-        if((rand() % 1000) < (100+ i))//5% flip chance, further to the right = increased chance
+        if((rand() % 1000) < (50+ i))//5% flip chance, further to the right = increased chance
         {
             if(a.genome[i] == '1')
                 a.genome[i] = '0';
@@ -138,7 +138,7 @@ void p3cataclysm(Heap<genNode>&h, const forest& f)
         int i=0;
         while(commies[o].genome[i] != 0)//0 term string
         {
-            if((rand() % 100) < 30)//35% flip chance (up from 20%)
+            if((rand() % 100) < 35)//35% flip chance (up from 20%)
             {
                 if(commies[o].genome[i] == '1')
                     commies[o].genome[i] = '0';

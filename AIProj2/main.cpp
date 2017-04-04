@@ -428,7 +428,7 @@ int main()
         cout<<endl<<endl;
 
         
-        cout<<"beginning Phase 3:";
+        cout<<"beginning Phase 3:\n";
         
         genNode i1 = beginp3Genetics(f);
         genNode i2 = beginp3Genetics(f);
@@ -436,12 +436,13 @@ int main()
         genNode i4 = beginp3Genetics(f);
         
         survivor = maxFour(i1, i2, i3, i4);
-        for(int i=0; i<10; i++)
-        {
-            genNode surv2 = beginp3Genetics(f);
-            if(surv2>survivor)
-                survivor = surv2;
-        }
+        
+//        for(int i=0; i<10; i++)
+//        {
+//            genNode surv2 = beginp3Genetics(f);
+//            if(surv2>survivor)
+//                survivor = surv2;
+//        }
    
         cout<<"A survivor has appeared.\ngenome: \n"<<survivor.genome<<endl;
         
@@ -488,16 +489,17 @@ int main()
     cout<<"finished all computation.\n\n\n";
     if(p1done)
     {
-        cout<<"Phase1 result genome:\n";
-        cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl<<endl;
+        cout<<"*******************\nPhase1 result genome:\n";
+        cout<<p1strand.genome<<endl<<"strength: "<<p1strand.strength<<endl;
+        cout<<p1fitcalls<<" fitness calls for p1.\n\n";
     }
     else
-        cout<<"Phase 1 failed to open.\n\n";
+        cout<<"*******************\nPhase 1 failed to open.\n\n";
     
     
     if(p3done)
     {
-        cout<<"Phase 2 result genome:\n";
+        cout<<"*******************\nPhase 2 result genome:\n";
         cout<<readable2<<endl;
         
       //  cout<<"***breakdown***\n";
@@ -505,7 +507,8 @@ int main()
         if(p2strand.dead)
             cout<<"This specimen died.\n";
         else
-            cout<<"This specimen did not die.\n\n";
+            cout<<"This specimen did not die.\n";
+        cout<<p2fitcalls<<" fitness calls for p2.\n\n";
         
         cout<<"*******************\nPhase 3 result genome:\n";
         cout<<readable<<endl;
